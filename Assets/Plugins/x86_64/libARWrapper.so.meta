@@ -11,7 +11,7 @@ PluginImporter:
     Android:
       enabled: 0
       settings:
-        CPU: AnyCPU
+        CPU: x86
     Any:
       enabled: 1
       settings: {}
@@ -20,7 +20,7 @@ PluginImporter:
       settings:
         CPU: x86_64
         DefaultValueInitialized: true
-        OS: Linux
+        OS: AnyOS
     Linux:
       enabled: 0
       settings:
