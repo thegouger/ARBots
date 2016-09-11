@@ -29,7 +29,6 @@ void setup()
   pinMode(PIN_BIN2, OUTPUT);
 
   // initialize serial communication
-  Serial.setTimeout(100);
   Serial1.begin(BAUDRATE);
 }
 
@@ -104,6 +103,7 @@ void handleMoveCmd(uint8_t dir, uint8_t pwr){
         }
         backWheelsMove(speed);
     }
+    Serial1.write("done");
 }
 void handleTurnCmd(uint8_t dir){
     if (dir == 1){
@@ -115,6 +115,7 @@ void handleTurnCmd(uint8_t dir){
     else{
         frontWheelsTurn(TURN_NONE);
     }
+    Serial1.write("done");
 }
 
 // -255 for fully backward
