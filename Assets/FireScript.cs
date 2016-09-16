@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityStandardAssets.CrossPlatformInput;
 
 public class FireScript : MonoBehaviour {
 
@@ -10,6 +11,7 @@ public class FireScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
         if (Input.GetMouseButtonDown(0))
         {
             // Spawn projectile

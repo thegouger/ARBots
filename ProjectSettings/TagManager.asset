@@ -8,6 +8,8 @@ TagManager:
   - Character
   - Glove
   - Target
+  - BluetoothDevice
+  - JoyStick
   layers:
   - Default
   - TransparentFX
@@ -18,7 +20,7 @@ TagManager:
   - 
   - 
   - AR background
-  - AR background 2
+  - 
   - AR foreground
   - 
   - 
