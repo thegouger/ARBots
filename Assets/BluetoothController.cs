@@ -6,7 +6,7 @@ using UnityStandardAssets.CrossPlatformInput;
 
 public class BluetoothController : MonoBehaviour
 {
-    private BluetoothDevice btDevice;
+    public BluetoothDevice btDevice;
     public Text btStatusText;
     public bool btEnabled;
 
@@ -23,37 +23,23 @@ public class BluetoothController : MonoBehaviour
         BACKWARD = 2
     };
 
-    private const byte MAX_SPEED = 100;
+    private const byte MAX_SPEED = 255;
+    private const byte MAX_FORWARD_SPEED = 125;
+    private const byte TURNING_GAIN = 80;
 
     private float prevSendTime;
-    private float btSendInterval = 0.15f;
+    private float btSendInterval = 0.1f;
 
     private Queue<byte[]> cmdQueue = new Queue<byte[]>();
 
     // Initialization
     void Awake()
     {
-        btStatusText.text = "Bluetooth status : Connecting...";
-        //btEnable = true;
-
         if (btEnabled)
         {
-            //Ask user to enable Bluetooth
-            BluetoothAdapter.enableBluetooth();
+            this.btDevice = GlobalControl.Instance.btDevice;
 
-            btDevice = new BluetoothDevice();
-
-            // Identify Bluetooth device
-            btDevice.Name = "HC-06";
-            //btDevice.MacAddress = "20:16:06:15:66:74";
-
-            btDevice.setEndByte(10);
-
-            btStatusText.text = "Bluetooth status : Connecting...";
-            // Connect to Bluetooth device
-            btDevice.connect(attempts: 10, time: 1000, allowDiscovery: false);
-
-            if (btDevice != null)
+            if (this.btDevice != null)
             {
                 btStatusText.text = "Bluetooth status : Connected";
             }
@@ -77,9 +63,9 @@ public class BluetoothController : MonoBehaviour
     // When this object is destroyed
     void OnDestroy()
     {
-        if (btDevice != null)
+        if (this.btDevice != null)
         {
-            btDevice.close();
+            this.btDevice.close();
         }
     }
 
@@ -100,6 +86,8 @@ public class BluetoothController : MonoBehaviour
 
                 Vector2 joystickInput = new Vector2(CrossPlatformInputManager.GetAxis("JoystickX"), CrossPlatformInputManager.GetAxis("JoystickY"));
 
+                bool going_straight = false;
+
                 if (joystickInput.x > 0.3)
                 {
                     TurnRobot(ROBOT_TURN_DIR.RIGHT);
@@ -111,11 +99,16 @@ public class BluetoothController : MonoBehaviour
                 else
                 {
                     TurnRobot(ROBOT_TURN_DIR.NONE);
+                    going_straight = true;
                 }
 
                 if (joystickInput.y > 0.2 || joystickInput.y < -0.2)
                 {
-                    int speed = (int)(joystickInput.y * MAX_SPEED);
+                    int speed = (int)(joystickInput.y * MAX_FORWARD_SPEED);
+                    if (!going_straight)
+                    {
+                        speed += TURNING_GAIN;
+                    }
                     MoveRobot(speed);
                 }
                 else
@@ -133,7 +126,7 @@ public class BluetoothController : MonoBehaviour
             if (cmdQueue.Count > 0)
             {
                 byte[] cmd = cmdQueue.Dequeue();
-
+                this.btDevice.send(cmd);
             }
         }
     }
